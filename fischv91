@@ -100,13 +100,7 @@ local ReelMode = "Blatant"  -- Default mode
 local CastMode = "Blatant"  -- Default cast mode
 local ShakeMode = "Blatant"  -- Default shake mode
 
--- UI Tab with toggles
-local MainTab = Window:CreateTab({
-    Name = "Main",
-    Icon = "code",
-    ImageSource = "Material",
-    ShowTitle = true -- This will determine whether the big header text in the tab will show
-})
+
 
 -- // // // Auto Cast // // // --
 local autoCastEnabled = false
@@ -258,7 +252,13 @@ local function stopAutoReel()
     end
 end
 
-
+-- UI Tab with toggles
+local MainTab = Window:CreateTab({
+    Name = "Main",
+    Icon = "code",
+    ImageSource = "Material",
+    ShowTitle = true -- This will determine whether the big header text in the tab will show
+})
 
 PlayerGui.DescendantAdded:Connect(function(descendant)
     if autoReelEnabled and descendant.Name == "playerbar" and descendant.Parent and descendant.Parent.Name == "bar" then
