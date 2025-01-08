@@ -1,3 +1,342 @@
+local Luna = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Luna-Interface-Suite/refs/heads/main/source.lua", true))()
+
+
+local Window = Luna:CreateWindow({
+	Name = "Snyped", -- This Is Title Of Your Window
+	Subtitle = nil, -- A Gray Subtitle next To the main title.
+	LogoID = "82795327169782", -- The Asset ID of your logo. Set to nil if you do not have a logo for Luna to use.
+	LoadingEnabled = true, -- Whether to enable the loading animation. Set to false if you do not want the loading screen or have your own custom one.
+	LoadingTitle = "Snyped Studios", -- Header for loading screen
+	LoadingSubtitle = "by Snyped Softworks", -- Subtitle for loading screen
+
+	ConfigSettings = {
+		RootFolder = nil, -- The Root Folder Is Only If You Have A Hub With Multiple Game Scripts and u may remove it. DO NOT ADD A SLASH
+		ConfigFolder = "Big Hub" -- The Name Of The Folder Where Luna Will Store Configs For This Script. DO NOT ADD A SLASH
+	},
+
+	KeySystem = false, -- As Of Beta 6, Luna Has officially Implemented A Key System!
+	KeySettings = {
+		Title = "Luna Example Key",
+		Subtitle = "Key System",
+		Note = "Best Key System Ever! Also, Please Use A HWID Keysystem like Pelican, Luarmor etc. that provide key strings based on your HWID since putting a simple string is very easy to bypass",
+		SaveInRoot = false, -- Enabling will save the key in your RootFolder (YOU MUST HAVE ONE BEFORE ENABLING THIS OPTION)
+		SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+		Key = {"Example Key"}, -- List of keys that will be accepted by the system, please use a system like Pelican or Luarmor that provide key strings based on your HWID since putting a simple string is very easy to bypass
+		SecondAction = {
+			Enabled = true, -- Set to false if you do not want a second action,
+			Type = "Discord", -- Link / Discord.
+			Parameter = "33DsCEmsQD" -- If Type is Discord, then put your invite link (DO NOT PUT DISCORD.GG/). Else, put the full link of your key system here.
+		}
+	}
+})
+
+
+
+-- // // // Services // // // --
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+local HttpService = game:GetService("HttpService")
+local GuiService = game:GetService("GuiService")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+local CoreGui = game:GetService('StarterGui')
+local ContextActionService = game:GetService('ContextActionService')
+local UserInputService = game:GetService('UserInputService')
+
+-- // // // Locals // // // --
+local LocalPlayer = Players.LocalPlayer
+local LocalCharacter = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = LocalCharacter:FindFirstChild("HumanoidRootPart")
+local UserPlayer = HumanoidRootPart:WaitForChild("user")
+local ActiveFolder = Workspace:FindFirstChild("active")
+local FishingZonesFolder = Workspace:FindFirstChild("zones"):WaitForChild("fishing")
+local TpSpotsFolder = Workspace:FindFirstChild("world"):WaitForChild("spawns"):WaitForChild("TpSpots")
+local NpcFolder = Workspace:FindFirstChild("world"):WaitForChild("npcs")
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local screenGui = Instance.new("ScreenGui", PlayerGui)
+local shadowCountLabel = Instance.new("TextLabel", screenGui)
+local RenderStepped = RunService.RenderStepped
+local WaitForSomeone = RenderStepped.Wait
+
+-- // // // Features List // // // --
+
+
+-- // // // Variables // // // --
+local CastMode = "Legit"
+local ShakeMode = "Navigation"
+local ReelMode = "Blatant"
+local CollectMode = "Teleports"
+local teleportSpots = {}
+local FreezeChar = false
+local DayOnlyLoop = nil
+local BypassGpsLoop = nil
+local Noclip = false
+local RunCount = false
+
+Luna:Notification({ 
+	Title = "Snyped Notification",
+	Icon = "notifications_active",
+	ImageSource = "Material",
+	Content = "Snyped connection is a success !"
+})
+
+
+Window:CreateHomeTab({
+	SupportedExecutors = {}, -- A Table Of Executors Your Script Supports. Add strings of the executor names for each executor.
+	DiscordInvite = "33DsCEmsQD", -- The Discord Invite Link. Do Not Include discord.gg/ | Only Include the code.
+	Icon = 1, -- By Default, The Icon Is The Home Icon. If You would like to change it to dashboard, replace the interger with 2
+})
+
+
+
+
+-- Variables for toggles
+local autoCastEnabled = false
+local autoShakeEnabled = false
+local autoReelEnabled = false
+local ReelMode = "Blatant"  -- Default mode
+local CastMode = "Blatant"  -- Default cast mode
+local ShakeMode = "Blatant"  -- Default shake mode
+
+-- Auto Cast Logic
+local function autoCast()
+    if LocalCharacter then
+        local tool = LocalCharacter:FindFirstChildOfClass("Tool")
+        if tool then
+            local hasBobber = tool:FindFirstChild("bobber")
+            if not hasBobber then
+                if CastMode == "Legit" then
+                    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, LocalPlayer, 0)
+                    HumanoidRootPart.ChildAdded:Connect(function()
+                        if HumanoidRootPart:FindFirstChild("power") ~= nil and HumanoidRootPart.power.powerbar.bar ~= nil then
+                            HumanoidRootPart.power.powerbar.bar.Changed:Connect(function(property)
+                                if property == "Size" then
+                                    if HumanoidRootPart.power.powerbar.bar.Size == UDim2.new(1, 0, 1, 0) then
+                                        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, LocalPlayer, 0)
+                                    end
+                                end
+                            end)
+                        end
+                    end)
+                elseif CastMode == "Blatant" then
+                    local rod = LocalCharacter and LocalCharacter:FindFirstChildOfClass("Tool")
+                    if rod and rod:FindFirstChild("values") and string.find(rod.Name, "Rod") then
+                        task.wait(0.5)
+                        local Random = math.random(90, 99)
+                        rod.events.cast:FireServer(Random)
+                    end
+                end
+            end
+        end
+        task.wait(0.5)
+    end
+end
+
+-- Auto Shake Logic
+local autoShakeConnection
+local function autoShake()
+    if ShakeMode == "Legit" then
+        task.wait()
+        xpcall(function()
+            local shakeui = PlayerGui:FindFirstChild("shakeui")
+            if not shakeui then return end
+            local safezone = shakeui:FindFirstChild("safezone")
+            local button = safezone and safezone:FindFirstChild("button")
+            task.wait(0.2)
+            GuiService.SelectedObject = button
+            if GuiService.SelectedObject == button then
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+            end
+            task.wait(0.1)
+            GuiService.SelectedObject = nil
+        end, function(err) end)
+    elseif ShakeMode == "Blatant" then
+        task.wait()
+        xpcall(function()
+            local shakeui = PlayerGui:FindFirstChild("shakeui")
+            if not shakeui then return end
+            local safezone = shakeui:FindFirstChild("safezone")
+            local button = safezone and safezone:FindFirstChild("button")
+            local pos = button.AbsolutePosition
+            local size = button.AbsoluteSize
+            VirtualInputManager:SendMouseButtonEvent(pos.X + size.X / 2, pos.Y + size.Y / 2, 0, true, LocalPlayer, 0)
+            VirtualInputManager:SendMouseButtonEvent(pos.X + size.X / 2, pos.Y + size.Y / 2, 0, false, LocalPlayer, 0)
+        end, function(err) end)
+    end
+end
+
+local function startAutoShake()
+    if autoShakeConnection or not autoShakeEnabled then return end
+    autoShakeConnection = RunService.RenderStepped:Connect(autoShake)
+end
+
+local function stopAutoShake()
+    if autoShakeConnection then
+        autoShakeConnection:Disconnect()
+        autoShakeConnection = nil
+    end
+end
+
+-- Auto Reel Logic
+local function autoReel()
+    local reel = PlayerGui:FindFirstChild("reel")
+    if not reel then return end
+    local bar = reel:FindFirstChild("bar")
+    local playerbar = bar and bar:FindFirstChild("playerbar")
+    local fish = bar and bar:FindFirstChild("fish")
+    if playerbar and fish then
+        playerbar.Position = fish.Position
+    end
+end
+
+local function noperfect()
+    local reel = PlayerGui:FindFirstChild("reel")
+    if not reel then return end
+    local bar = reel:FindFirstChild("bar")
+    local playerbar = bar and bar:FindFirstChild("playerbar")
+    if playerbar then
+        playerbar.Position = UDim2.new(0, 0, -35, 0)
+        wait(0.2)
+    end
+end
+
+local autoReelConnection
+
+local function startAutoReel()
+    if ReelMode == "Legit" then
+        if autoReelConnection or not autoReelEnabled then return end
+        noperfect()
+        task.wait(2)
+        autoReelConnection = RunService.RenderStepped:Connect(autoReel)
+    elseif ReelMode == "Blatant" then
+        local reel = PlayerGui:FindFirstChild("reel")
+        if not reel then return end
+        local bar = reel:FindFirstChild("bar")
+        local playerbar = bar and bar:FindFirstChild("playerbar")
+        playerbar:GetPropertyChangedSignal('Position'):Wait()
+        game.ReplicatedStorage:WaitForChild("events"):WaitForChild("reelfinished"):FireServer(100, false)
+    end
+end
+
+local function stopAutoReel()
+    if autoReelConnection then
+        autoReelConnection:Disconnect()
+        autoReelConnection = nil
+    end
+end
+
+-- UI Tab with toggles
+local MainTab = Window:CreateTab({
+    Name = "Main",
+    Icon = "code",
+    ImageSource = "Material",
+    ShowTitle = true -- This will determine whether the big header text in the tab will show
+})
+
+-- Auto Cast Toggle
+MainTab:CreateToggle({
+    Name = "Enable Auto Cast",
+    Description = "Toggle Auto Cast on/off",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoCastEnabled = Value
+        if autoCastEnabled then
+            task.spawn(function()
+                while autoCastEnabled do
+                    autoCast()  -- Trigger Auto Cast function
+                    task.wait(0.5)
+                end
+            end)
+        end
+    end
+}, "AutoCastToggle")
+
+-- Auto Shake Toggle
+MainTab:CreateToggle({
+    Name = "Enable Auto Shake",
+    Description = "Toggle Auto Shake on/off",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoShakeEnabled = Value
+        if autoShakeEnabled then
+            startAutoShake()  -- Start Auto Shake based on selection
+        else
+            stopAutoShake()  -- Stop Auto Shake if it's disabled
+        end
+    end
+}, "AutoShakeToggle")
+
+-- Auto Reel Toggle
+MainTab:CreateToggle({
+    Name = "Enable Auto Reel",
+    Description = "Toggle Auto Reel on/off",
+    CurrentValue = false,
+    Callback = function(Value)
+        autoReelEnabled = Value
+        if autoReelEnabled then
+            startAutoReel()  -- Start Auto Reel based on selection
+        else
+            stopAutoReel()  -- Stop Auto Reel if it's disabled
+        end
+    end
+}, "AutoReelToggle")
+
+-- Legit Mode Toggle
+MainTab:CreateToggle({
+    Name = "Enable Legit Mode",
+    Description = "Toggle Legit mode for Auto Reel on/off",
+    CurrentValue = false,
+    Callback = function(Value)
+        if Value then
+            ReelMode = "Legit"  -- Set to Legit mode
+        else
+            ReelMode = "Blatant"  -- Set to Blatant mode
+        end
+    end
+}, "LegitModeToggle")
+
+-- Blatant Mode Toggle
+MainTab:CreateToggle({
+    Name = "Enable Blatant Mode",
+    Description = "Toggle Blatant mode for Auto Reel on/off",
+    CurrentValue = false,
+    Callback = function(Value)
+        if Value then
+            ReelMode = "Blatant"  -- Set to Blatant mode
+        else
+            ReelMode = "Legit"  -- Set to Legit mode
+        end
+    end
+}, "BlatantModeToggle")
+
+-- Ensure Auto Reels work based on the mode and UI
+PlayerGui.DescendantAdded:Connect(function(descendant)
+    if autoReelEnabled and descendant.Name == "playerbar" and descendant.Parent and descendant.Parent.Name == "bar" then
+        startAutoReel()
+    end
+end)
+
+PlayerGui.DescendantRemoving:Connect(function(descendant)
+    if descendant.Name == "playerbar" and descendant.Parent and descendant.Parent.Name == "bar" then
+        stopAutoReel()
+        if autoCastEnabled then
+            task.wait(1)
+            autoCast()
+        end
+    end
+end)
+
+if autoReelEnabled and PlayerGui:FindFirstChild("reel") and 
+    PlayerGui.reel:FindFirstChild("bar") and 
+    PlayerGui.reel.bar:FindFirstChild("playerbar") then
+    startAutoReel()
+end
+
+
+
 -- // Teleport Tab Setup // --
 local TPTab = Window:CreateTab({
     Name = "Teleport",
@@ -110,3 +449,7 @@ TPTab:CreateButton({
         HumanoidRootPart.CFrame = SafeZone.CFrame + Vector3.new(0, 5, 0)  -- Teleport to the newly created SafeZone
     end
 })
+
+
+
+
