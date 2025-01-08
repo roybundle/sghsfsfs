@@ -108,7 +108,8 @@ local ReelMode = "Legit"  -- Default mode
 local CastMode = "Legit"  -- Default cast mode
 local ShakeMode = "Legit"  -- Default shake mode
 
--- Auto Cast Logic
+-- // // // Auto Cast // // // --
+local autoCastEnabled = false
 local function autoCast()
     if LocalCharacter then
         local tool = LocalCharacter:FindFirstChildOfClass("Tool")
@@ -116,7 +117,10 @@ local function autoCast()
             local hasBobber = tool:FindFirstChild("bobber")
             if not hasBobber then
                 if CastMode == "Legit" then
+                    -- Sending a click event faster
                     VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, LocalPlayer, 0)
+                    wait(0.1)  -- Reduced the delay to make it faster
+                    VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, LocalPlayer, 0)
                     HumanoidRootPart.ChildAdded:Connect(function()
                         if HumanoidRootPart:FindFirstChild("power") ~= nil and HumanoidRootPart.power.powerbar.bar ~= nil then
                             HumanoidRootPart.power.powerbar.bar.Changed:Connect(function(property)
@@ -131,51 +135,51 @@ local function autoCast()
                 elseif CastMode == "Blatant" then
                     local rod = LocalCharacter and LocalCharacter:FindFirstChildOfClass("Tool")
                     if rod and rod:FindFirstChild("values") and string.find(rod.Name, "Rod") then
-                        task.wait(0.5)
+                        -- Faster casting by triggering it immediately
                         local Random = math.random(90, 99)
                         rod.events.cast:FireServer(Random)
                     end
                 end
             end
         end
-        task.wait(0.5)
+        wait(0.2)  -- Slight delay for consistent loop
     end
 end
 
--- Auto Shake Logic
+-- // // // Auto Shake // // // --
+local autoShakeEnabled = false
 local autoShakeConnection
 local function autoShake()
     if ShakeMode == "Legit" then
-        task.wait()
+        task.wait(0.1)  -- Reduced the wait time
         xpcall(function()
             local shakeui = PlayerGui:FindFirstChild("shakeui")
             if not shakeui then return end
             local safezone = shakeui:FindFirstChild("safezone")
             local button = safezone and safezone:FindFirstChild("button")
-            task.wait(0.2)
-            GuiService.SelectedObject = button
-            if GuiService.SelectedObject == button then
+            if button then
+                GuiService.SelectedObject = button
                 VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
                 VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+                GuiService.SelectedObject = nil
             end
-            task.wait(0.1)
-            GuiService.SelectedObject = nil
         end, function(err) end)
     elseif ShakeMode == "Blatant" then
-        task.wait()
+        task.wait(0.1)
         xpcall(function()
             local shakeui = PlayerGui:FindFirstChild("shakeui")
             if not shakeui then return end
             local safezone = shakeui:FindFirstChild("safezone")
             local button = safezone and safezone:FindFirstChild("button")
-            local pos = button.AbsolutePosition
-            local size = button.AbsoluteSize
-            VirtualInputManager:SendMouseButtonEvent(pos.X + size.X / 2, pos.Y + size.Y / 2, 0, true, LocalPlayer, 0)
-            VirtualInputManager:SendMouseButtonEvent(pos.X + size.X / 2, pos.Y + size.Y / 2, 0, false, LocalPlayer, 0)
+            if button then
+                local pos = button.AbsolutePosition
+                local size = button.AbsoluteSize
+                VirtualInputManager:SendMouseButtonEvent(pos.X + size.X / 2, pos.Y + size.Y / 2, 0, true, LocalPlayer, 0)
+                VirtualInputManager:SendMouseButtonEvent(pos.X + size.X / 2, pos.Y + size.Y / 2, 0, false, LocalPlayer, 0)
+            end
         end, function(err) end)
     end
 end
-
 local function startAutoShake()
     if autoShakeConnection or not autoShakeEnabled then return end
     autoShakeConnection = RunService.RenderStepped:Connect(autoShake)
@@ -186,9 +190,27 @@ local function stopAutoShake()
         autoShakeConnection:Disconnect()
         autoShakeConnection = nil
     end
+
+PlayerGui.DescendantAdded:Connect(function(descendant)
+    if autoShakeEnabled and descendant.Name == "button" and descendant.Parent and descendant.Parent.Name == "safezone" then
+        startAutoShake()
+    end
+end)
+
+PlayerGui.DescendantAdded:Connect(function(descendant)
+    if descendant.Name == "playerbar" and descendant.Parent and descendant.Parent.Name == "bar" then
+        stopAutoShake()
+    end
+end)
+
+if autoShakeEnabled and PlayerGui:FindFirstChild("shakeui") and PlayerGui.shakeui:FindFirstChild("safezone") and PlayerGui.shakeui.safezone:FindFirstChild("button") then
+    startAutoShake()
 end
 
--- Auto Reel Logic
+-- // // // Auto Reel // // // --
+local autoReelEnabled = false
+local PerfectCatchEnabled = false
+local autoReelConnection
 local function autoReel()
     local reel = PlayerGui:FindFirstChild("reel")
     if not reel then return end
@@ -207,7 +229,7 @@ local function noperfect()
     local playerbar = bar and bar:FindFirstChild("playerbar")
     if playerbar then
         playerbar.Position = UDim2.new(0, 0, -35, 0)
-        wait(0.2)
+        wait(0.1)  -- Reduced the wait time
     end
 end
 
@@ -217,7 +239,7 @@ local function startAutoReel()
     if ReelMode == "Legit" then
         if autoReelConnection or not autoReelEnabled then return end
         noperfect()
-        task.wait(2)
+        task.wait(1)  -- Reduced delay for quicker response
         autoReelConnection = RunService.RenderStepped:Connect(autoReel)
     elseif ReelMode == "Blatant" then
         local reel = PlayerGui:FindFirstChild("reel")
@@ -243,6 +265,8 @@ local MainTab = Window:CreateTab({
     ImageSource = "Material",
     ShowTitle = true -- This will determine whether the big header text in the tab will show
 })
+
+
 
 -- Auto Cast Toggle
 MainTab:CreateToggle({
