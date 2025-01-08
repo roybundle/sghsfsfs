@@ -345,7 +345,8 @@ local TPTab = Window:CreateTab({
     ShowTitle = true  -- Show the big header text in the tab
 })
 
-
+-- // Create "Other Teleports" Section // --
+local OtherTeleportsSection = TPTab:CreateSection("Other Teleports")
 
 -- // Find TpSpots // --
 local TpSpotsFolder = Workspace:FindFirstChild("world"):WaitForChild("spawns"):WaitForChild("TpSpots")
@@ -380,8 +381,7 @@ local IslandTPDropdownUI = TPTab:CreateDropdown({
 }, "IslandTPDropdownUI")
 
 
--- // Create "Other Teleports" Section // --
-local OtherTeleportsSection = TPTab:CreateSection("Other Teleports")
+
 
 -- // Create Divider Between Dropdowns // --
 TPTab:CreateDivider()
