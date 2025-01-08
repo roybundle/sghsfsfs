@@ -7,7 +7,7 @@ local Window = Luna:CreateWindow({
 	LogoID = "82795327169782", -- The Asset ID of your logo. Set to nil if you do not have a logo for Luna to use.
 	LoadingEnabled = true, -- Whether to enable the loading animation. Set to false if you do not want the loading screen or have your own custom one.
 	LoadingTitle = "Snyped Studios", -- Header for loading screen
-	LoadingSubtitle = "by Snyped Softworks 123", -- Subtitle for loading screen
+	LoadingSubtitle = "By Snyped Softworks 123", -- Subtitle for loading screen
 
 	ConfigSettings = {
 		RootFolder = nil, -- The Root Folder Is Only If You Have A Hub With Multiple Game Scripts and u may remove it. DO NOT ADD A SLASH
@@ -358,7 +358,7 @@ for i, v in pairs(TpSpotsFolder:GetChildren()) do
     end
 end
 
--- // Dropdown for Selecting Area Teleport // --
+-- // Create Area Teleport Dropdown (This works fine as per your description) // --
 local IslandTPDropdownUI = TPTab:CreateDropdown({
     Name = "Area Teleport",  -- Title of the dropdown
     Description = nil,        -- Optional description for the dropdown
@@ -380,13 +380,10 @@ local IslandTPDropdownUI = TPTab:CreateDropdown({
     end
 }, "IslandTPDropdownUI")
 
-
-
-
 -- // Create Divider Between Dropdowns // --
 TPTab:CreateDivider()
 
--- // Dropdown for Selecting Totem Teleports // --
+-- // Create Totem Teleport Dropdown in the Other Teleports Section // --
 local TotemTPDropdownUI = OtherTeleportsSection:CreateDropdown({
     Name = "Select Totem",  -- Title of the dropdown
     Description = nil,      -- Optional description
@@ -414,7 +411,7 @@ local TotemTPDropdownUI = OtherTeleportsSection:CreateDropdown({
 -- // Divider After Totem Dropdown // --
 TPTab:CreateDivider()
 
--- // Dropdown for Selecting World Event Teleports // --
+-- // Create World Event Teleport Dropdown in the Other Teleports Section // --
 local WorldEventTPDropdownUI = OtherTeleportsSection:CreateDropdown({
     Name = "Select World Event",  -- Title of the dropdown
     Description = nil,            -- Optional description
@@ -438,7 +435,7 @@ local WorldEventTPDropdownUI = OtherTeleportsSection:CreateDropdown({
 -- // Divider After World Event Dropdown // --
 TPTab:CreateDivider()
 
--- // Teleport to Traveler Merchant Button // --
+-- // Create Teleport to Traveler Merchant Button in the Other Teleports Section // --
 OtherTeleportsSection:CreateButton({
     Name = "Teleport to Traveler Merchant",  -- Button label
     Description = "Teleports to the Traveler Merchant.",  -- Optional description
@@ -453,7 +450,7 @@ OtherTeleportsSection:CreateButton({
     end
 })
 
--- // Create Safe Zone Button // --
+-- // Create Safe Zone Button in the Other Teleports Section // --
 OtherTeleportsSection:CreateButton({
     Name = "Create Safe Zone",  -- Button label
     Description = nil,          -- No description needed
@@ -469,6 +466,7 @@ OtherTeleportsSection:CreateButton({
         HumanoidRootPart.CFrame = SafeZone.CFrame + Vector3.new(0, 5, 0)  -- Teleport to the newly created SafeZone
     end
 })
+
 
 
 
