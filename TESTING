@@ -7,7 +7,7 @@ local Window = Luna:CreateWindow({
 	LogoID = "82795327169782", -- The Asset ID of your logo. Set to nil if you do not have a logo for Luna to use.
 	LoadingEnabled = true, -- Whether to enable the loading animation. Set to false if you do not want the loading screen or have your own custom one.
 	LoadingTitle = "Snyped Studios", -- Header for loading screen
-	LoadingSubtitle = "by Snyped Softworks", -- Subtitle for loading screen
+	LoadingSubtitle = "by Snyped Softworks 123", -- Subtitle for loading screen
 
 	ConfigSettings = {
 		RootFolder = nil, -- The Root Folder Is Only If You Have A Hub With Multiple Game Scripts and u may remove it. DO NOT ADD A SLASH
@@ -345,6 +345,9 @@ local TPTab = Window:CreateTab({
     ShowTitle = true  -- Show the big header text in the tab
 })
 
+-- // Create "Other Teleports" Section // --
+local OtherTeleportsSection = TPTab:CreateSection("Other Teleports")
+
 -- // Find TpSpots // --
 local TpSpotsFolder = Workspace:FindFirstChild("world"):WaitForChild("spawns"):WaitForChild("TpSpots")
 local teleportSpots = {}  -- Array to store available teleport spots
@@ -354,9 +357,6 @@ for i, v in pairs(TpSpotsFolder:GetChildren()) do
         table.insert(teleportSpots, v.Name)  -- Add unique spots to the teleportSpots array
     end
 end
-
--- // Debugging: Confirm Teleport Spots // --
-print("Teleport Spots: ", teleportSpots)
 
 -- // Dropdown for Selecting Area Teleport // --
 local IslandTPDropdownUI = TPTab:CreateDropdown({
@@ -380,8 +380,11 @@ local IslandTPDropdownUI = TPTab:CreateDropdown({
     end
 }, "IslandTPDropdownUI")
 
+-- // Create Divider Between Dropdowns // --
+TPTab:CreateDivider()
+
 -- // Dropdown for Selecting Totem Teleports // --
-local TotemTPDropdownUI = TPTab:CreateDropdown({
+local TotemTPDropdownUI = OtherTeleportsSection:CreateDropdown({
     Name = "Select Totem",  -- Title of the dropdown
     Description = nil,      -- Optional description
     Options = {"Aurora", "Sundial", "Windset", "Smokescreen", "Tempest"},  -- Predefined totems
@@ -405,8 +408,11 @@ local TotemTPDropdownUI = TPTab:CreateDropdown({
     end
 }, "TotemTPDropdownUI")
 
+-- // Divider After Totem Dropdown // --
+TPTab:CreateDivider()
+
 -- // Dropdown for Selecting World Event Teleports // --
-local WorldEventTPDropdownUI = TPTab:CreateDropdown({
+local WorldEventTPDropdownUI = OtherTeleportsSection:CreateDropdown({
     Name = "Select World Event",  -- Title of the dropdown
     Description = nil,            -- Optional description
     Options = {"Strange Whirlpool", "Great Hammerhead Shark", "Great White Shark", "Whale Shark", "The Depths - Serpent"},  -- World events list
@@ -426,8 +432,11 @@ local WorldEventTPDropdownUI = TPTab:CreateDropdown({
     end
 }, "WorldEventTPDropdownUI")
 
+-- // Divider After World Event Dropdown // --
+TPTab:CreateDivider()
+
 -- // Teleport to Traveler Merchant Button // --
-local Button = TPTab:CreateButton({
+OtherTeleportsSection:CreateButton({
     Name = "Teleport to Traveler Merchant",  -- Button label
     Description = "Teleports to the Traveler Merchant.",  -- Optional description
     Callback = function()
@@ -442,7 +451,7 @@ local Button = TPTab:CreateButton({
 })
 
 -- // Create Safe Zone Button // --
-local Button = TPTab:CreateButton({
+OtherTeleportsSection:CreateButton({
     Name = "Create Safe Zone",  -- Button label
     Description = nil,          -- No description needed
     Callback = function()
