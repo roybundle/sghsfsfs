@@ -355,6 +355,9 @@ for i, v in pairs(TpSpotsFolder:GetChildren()) do
     end
 end
 
+-- // Debugging: Confirm Teleport Spots // --
+print("Teleport Spots: ", teleportSpots)
+
 -- // Dropdown for Selecting Area Teleport // --
 local IslandTPDropdownUI = TPTab:CreateDropdown({
     Name = "Area Teleport",  -- Title of the dropdown
@@ -364,6 +367,7 @@ local IslandTPDropdownUI = TPTab:CreateDropdown({
     MultipleOptions = false,  -- Single selection mode
     SpecialType = nil,        -- Optional special type for the dropdown
     Callback = function(Value)
+        print("Area Teleport Selected: ", Value)  -- Debugging: Confirm selection
         if teleportSpots ~= nil and HumanoidRootPart ~= nil then
             xpcall(function()
                 -- Teleport to the selected area
@@ -385,6 +389,7 @@ local TotemTPDropdownUI = TPTab:CreateDropdown({
     MultipleOptions = false,  -- Single selection
     SpecialType = nil,      -- Optional special type
     Callback = function(Value)
+        print("Totem Selected: ", Value)  -- Debugging: Confirm selection
         if Value == "Aurora" then
             HumanoidRootPart.CFrame = CFrame.new(-1811, -137, -3282)
         elseif Value == "Sundial" then
@@ -409,6 +414,7 @@ local WorldEventTPDropdownUI = TPTab:CreateDropdown({
     MultipleOptions = false,      -- Single selection
     SpecialType = nil,            -- Optional special type
     Callback = function(Value)
+        print("World Event Selected: ", Value)  -- Debugging: Confirm selection
         local offset = Vector3.new(0, 135, 0)
         local WorldEvent = game.Workspace.zones.fishing:FindFirstChild(Value)
         if not WorldEvent then
@@ -421,10 +427,11 @@ local WorldEventTPDropdownUI = TPTab:CreateDropdown({
 }, "WorldEventTPDropdownUI")
 
 -- // Teleport to Traveler Merchant Button // --
-TPTab:CreateButton({
+local Button = TPTab:CreateButton({
     Name = "Teleport to Traveler Merchant",  -- Button label
     Description = "Teleports to the Traveler Merchant.",  -- Optional description
     Callback = function()
+        print("Teleporting to Traveler Merchant...")  -- Debugging: Button pressed
         local Merchant = game.Workspace.active:FindFirstChild("Merchant Boat")
         if not Merchant then
             ShowNotification("Not found Merchant")
@@ -435,10 +442,11 @@ TPTab:CreateButton({
 })
 
 -- // Create Safe Zone Button // --
-TPTab:CreateButton({
+local Button = TPTab:CreateButton({
     Name = "Create Safe Zone",  -- Button label
     Description = nil,          -- No description needed
     Callback = function()
+        print("Creating Safe Zone...")  -- Debugging: Button pressed
         local SafeZone = Instance.new("Part")
         SafeZone.Size = Vector3.new(30, 1, 30)
         SafeZone.Position = Vector3.new(math.random(-2000, 2000), math.random(50000, 90000), math.random(-2000, 2000))
