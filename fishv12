@@ -258,6 +258,28 @@ local function stopAutoReel()
     end
 end
 
+PlayerGui.DescendantAdded:Connect(function(descendant)
+    if autoReelEnabled and descendant.Name == "playerbar" and descendant.Parent and descendant.Parent.Name == "bar" then
+        startAutoReel()
+    end
+end)
+
+PlayerGui.DescendantRemoving:Connect(function(descendant)
+    if descendant.Name == "playerbar" and descendant.Parent and descendant.Parent.Name == "bar" then
+        stopAutoReel()
+        if autoCastEnabled then
+            task.wait(1)
+            autoCast()
+        end
+    end
+end)
+
+if autoReelEnabled and PlayerGui:FindFirstChild("reel") and 
+    PlayerGui.reel:FindFirstChild("bar") and 
+    PlayerGui.reel.bar:FindFirstChild("playerbar") then
+    startAutoReel()
+end
+
 -- UI Tab with toggles
 local MainTab = Window:CreateTab({
     Name = "Main",
@@ -344,28 +366,6 @@ MainTab:CreateToggle({
     end
 }, "BlatantModeToggle")
 
--- Ensure Auto Reels work based on the mode and UI
-PlayerGui.DescendantAdded:Connect(function(descendant)
-    if autoReelEnabled and descendant.Name == "playerbar" and descendant.Parent and descendant.Parent.Name == "bar" then
-        startAutoReel()
-    end
-end)
-
-PlayerGui.DescendantRemoving:Connect(function(descendant)
-    if descendant.Name == "playerbar" and descendant.Parent and descendant.Parent.Name == "bar" then
-        stopAutoReel()
-        if autoCastEnabled then
-            task.wait(1)
-            autoCast()
-        end
-    end
-end)
-
-if autoReelEnabled and PlayerGui:FindFirstChild("reel") and 
-    PlayerGui.reel:FindFirstChild("bar") and 
-    PlayerGui.reel.bar:FindFirstChild("playerbar") then
-    startAutoReel()
-end
 
 
 
