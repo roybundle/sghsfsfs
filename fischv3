@@ -103,7 +103,7 @@ local autoReelEnabled = false
 local autoShakeEnabled = false
 
 -- Dropdown with options for Auto Fish
-local Dropdown = Window:CreateDropdown({
+local MainTab Dropdown = Window:CreateDropdown({
     Name = "Auto Fish",
     Description = "Select the fishing actions you want to enable.",
     Options = {"Auto Cast", "Auto Reel", "Auto Shake"},
