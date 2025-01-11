@@ -1,0 +1,132 @@
+-- Load the Luna Library
+local Luna = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Luna-Interface-Suite/refs/heads/main/source.lua", true))()
+
+-- Create the Main Window
+local Window = Luna:CreateWindow({
+	Name = "Snyped", -- This Is Title Of Your Window
+	Subtitle = nil, -- A Gray Subtitle next To the main title.
+	LogoID = "82795327169782", -- The Asset ID of your logo. Set to nil if you do not have a logo for Luna to use.
+	LoadingEnabled = true, -- Whether to enable the loading animation. Set to false if you do not want the loading screen or have your own custom one.
+	LoadingTitle = "Snyped Studios", -- Header for loading screen
+	LoadingSubtitle = "by Snyped Softworks", -- Subtitle for loading screen
+    ConfigSettings = {
+        RootFolder = nil, -- Leave nil unless you have a hub folder
+        ConfigFolder = "LunaConfigs"
+    },
+    KeySystem = false, -- Enable key system for additional security
+    KeySettings = {
+        Title = "Luna Key System",
+        Subtitle = "Enter Your Key",
+        Note = "Ensure you use a secure HWID-based key system.",
+        SaveInRoot = false,
+        SaveKey = true,
+        Key = {"YourSecureKeyHere"}, -- Replace with a secure key system
+        SecondAction = {
+            Enabled = true,
+            Type = "Link", -- You can also set this to "Discord"
+            Parameter = "https://your-website.com/key-system" -- Change to your key system or invite
+        }
+    }
+})
+
+-- Create Home Tab
+Window:CreateHomeTab({
+    SupportedExecutors = {"Synapse X", "Krnl", "Fluxus", "Solara" , "Snyped" , "Delta"}, -- List supported executors
+    DiscordInvite = "33DsCEmsQD", -- Replace with your Discord invite
+    Icon = 1 -- Home icon (set to 2 for dashboard icon)
+})
+
+-- First Tab: Dashboard
+local DashboardTab = Window:CreateTab({
+    Name = "Dashboard",
+    Icon = "dashboard",
+    ImageSource = "Material",
+    ShowTitle = true
+})
+DashboardTab:CreateLabel({
+    Text = "Welcome to the Dashboard!",
+    Style = 1 -- Basic label style
+})
+DashboardTab:CreateButton({
+    Name = "Start Script",
+    Description = "Start Script.",
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/roybundle/sghsfsfs/refs/heads/main/asfbsethset",true))()
+        
+        print("Script started!")
+    end
+})
+
+-- Second Tab: Settings
+local SettingsTab = Window:CreateTab({
+    Name = "Settings",
+    Icon = "settings",
+    ImageSource = "Material",
+    ShowTitle = true
+})
+SettingsTab:CreateToggle({
+    Name = "Infinite Yield",
+    Description = "Toggles IY.",
+    CurrentValue = false,
+    Callback = function(Value)
+        print("Feature enabled:", Value)
+        loadstring(game:HttpGet("https://cdn.wearedevs.net/scripts/Infinite%20Yield.txt"))()
+    end
+})
+--SettingsTab:CreateDropdown({
+--    Name = "Select Option",
+--   Options = {"Option 1", "Option 2", "Option 3"},
+--    CurrentOption = "Option 1",
+--    MultipleOptions = false,
+ --   Callback = function(Selected)
+  --      print("Selected option:", Selected)
+  --  end
+--})
+
+-- Third Tab: Appearance
+local AppearanceTab = Window:CreateTab({
+    Name = "Appearance",
+    Icon = "palette",
+    ImageSource = "Material",
+    ShowTitle = true
+})
+AppearanceTab:BuildThemeSection() -- Adds theming controls for users
+
+-- Fourth Tab: Configurations
+local ConfigTab = Window:CreateTab({
+    Name = "Configurations",
+    Icon = "storage",
+    ImageSource = "Material",
+    ShowTitle = true
+})
+ConfigTab:BuildConfigSection() -- Adds configuration saving/loading functionality
+
+-- Finishing Touches: Notifications and Keybinds
+Luna:Notification({
+    Title = "Welcome to Snyped!",
+    Icon = "check_circle",
+    ImageSource = "Material",
+    Content = "Enjoy using your custom UI powered by Luna!"
+})
+
+local KeybindTab = Window:CreateTab({
+    Name = "Keybinds",
+    Icon = "keyboard",
+    ImageSource = "Material",
+    ShowTitle = true
+})
+KeybindTab:CreateBind({
+    Name = "Toggle UI",
+    CurrentBind = "K",
+    HoldToInteract = false,
+    Callback = function()
+        print("UI Toggled!")
+    end,
+    OnChangedCallback = function(NewBind)
+        Window.Bind = NewBind -- Updates the window toggle keybind
+    end
+})
+
+-- End of Script
+print("Luna UI Initialized!")
